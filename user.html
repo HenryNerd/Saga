@@ -1,13 +1,41 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-    <link rel="stylesheet" href="style/index.css"> 
+    <link rel="stylesheet" href="style/user.css">
     <title>Saga - Sign In</title>
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
 </head>
+
 <body>
     <div class="userinfo">
-        <h1>Hello, User</h1>
-        <h2>Libbary Card</h2>
+        <div class="name">
+            <h1>Hello, User</h1>
+        </div>
+        <div class="barcode">
+            <svg id="barcode"></svg>
+            <h2 id="displayUserId"></h2>
+        </div>
     </div>
+
+    <script>
+        const userId = localStorage.getItem('userid');
+
+        if (userId) {
+            JsBarcode("#barcode", userId, {
+                format: "CODE128",
+                lineColor: "#000",
+                width: 2,
+                height: 100,
+                displayValue: false
+            });
+
+            document.getElementById('displayUserId').textContent = `User ID: ${userId}`;
+        } else {
+            document.getElementById('barcode').textContent = "No user ID found.";
+            document.getElementById('displayUserId').textContent = "No user ID found.";
+        }
+    </script>
 </body>
+
 </html>
