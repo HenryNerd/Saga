@@ -1,0 +1,61 @@
+body {
+    background-color: whitesmoke;
+    font-family: sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center; 
+    min-height: 100vh;
+    overflow: hidden;
+}
+
+.login {
+    background-color: coral;
+    line-height: 15px;
+    text-align: center;
+    width: 600px;
+    height: 400px;
+    border-radius: 15px;
+}
+
+.login h1 {
+    padding-top: 40px;
+    font-size: 48px;
+}
+
+.login h2 {
+    font-size: 24px;
+}
+
+form {
+    line-height: 20px;
+}
+
+.text{
+    color: #333;
+    background-color: whitesmoke;
+    border-width: 0px;
+    border-radius: 10px;
+    font-size: 22px;
+    height: 30px;
+    width: 400px;
+}
+
+.login label {
+    font-size: 20px;
+}
+
+input {
+    margin-top: 10px;
+    margin-bottom: 7px;
+}
+
+.submit input{
+    font-size: 24px;
+    color: whitesmoke;
+    border-radius: 10px;
+}
+
+.login h6 {
+    margin-top: 50px;
+    font-size: 12px;
+}
