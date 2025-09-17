@@ -3,7 +3,7 @@
 
 <head>
     <link rel="stylesheet" href="style/user.css">
-    <title>Saga - Sign In</title>
+    <title>Saga </title>
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
 </head>
 
@@ -16,27 +16,40 @@
             <svg id="barcode"></svg>
             <h2 id="displayUserId"></h2>
         </div>
+        <div class="button"></div>
+            <svg id="barcode"></svg>
+            <h2 id="displayUserId"></h2>
+        </div>
+        <div class="logbutton">
+            <button id="logout">Logout</button>
+        </div>
     </div>
 
-    <script>
-        const userId = localStorage.getItem('userid');
+<script>
+    const userId = localStorage.getItem('userid');
 
-        if (userId) {
-            JsBarcode("#barcode", userId, {
-                format: "CODE128",
-                lineColor: "#fff",
-                background: "transparent",
-                width: 2,
-                height: 100,
-                displayValue: false
-            });
+    if (userId) {
+        JsBarcode("#barcode", userId, {
+            format: "CODE128",
+            lineColor: "#fff",
+            background: "transparent",
+            width: 2,
+            height: 100,
+            displayValue: false
+        });
 
-            document.getElementById('displayUserId').textContent = `User ID: ${userId}`;
-        } else {
-            document.getElementById('barcode').textContent = "No user ID found.";
-            document.getElementById('displayUserId').textContent = "No user ID found.";
-        }
-    </script>
+        document.getElementById('displayUserId').textContent = `User ID: ${userId}`;
+    } else {
+        document.getElementById('barcode').textContent = "No user ID found.";
+        document.getElementById('displayUserId').textContent = "No user ID found.";
+    }
+
+    document.getElementById("logout").addEventListener("click", function () {
+        localStorage.removeItem("userid");
+        window.location.href = "index.html";
+    });
+</script>
+
 </body>
 
 </html>

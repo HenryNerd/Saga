@@ -25,13 +25,19 @@
                     event.preventDefault();
                     const numberValue = document.getElementById('userid').value;
                     localStorage.setItem('userid', numberValue);
-                    window.location.href = 'user.html'; // Navigate to next page
+                    window.location.href = 'user.html';
                 });
             </script>
 
             <h6>Saga Version: v0.0.1 | Build: Development | Language: EN</h6>
         </div>
     </div>
+    <script>
+    const userId = localStorage.getItem('userid');
+    if (userId) {
+        window.location.href = "user.html";
+    }
+</script>
 </body>
 
 </html>
