@@ -22,9 +22,19 @@ import { useState, useEffect } from "react";
 export default function Page() {
     const { email } = useEmail();
     const [message, setMessage] = useState("");
-    const [timer, setTimer] = useState(0); // countdown in seconds
+    const [timer, setTimer] = useState(60);
     const [isSending, setIsSending] = useState(false);
 
+    // Countdown effect
+    useEffect(() => {
+        if (timer === 0) return;
+        const interval = setInterval(() => {
+            setTimer(prev => prev - 1);
+        }, 1000);
+        return () => clearInterval(interval);
+    }, [timer]);
+
+    // Function to resend the OTP email
     const handleResend = async () => {
         if (isSending || timer > 0) return; // prevent spamming
 
@@ -40,20 +50,11 @@ export default function Page() {
             setMessage(error.message);
         } else {
             setMessage(`A new code has been sent to ${email}`);
-            setTimer(60); // start 60-second countdown
+            setTimer(60); // restart 60-second countdown
         }
 
         setIsSending(false);
     };
-
-    // Countdown effect
-    useEffect(() => {
-        if (timer === 0) return;
-        const interval = setInterval(() => {
-            setTimer(prev => prev - 1);
-        }, 1000);
-        return () => clearInterval(interval);
-    }, [timer]);
 
     return (
         <div className="flex justify-center items-center min-h-screen bg-gray-800">
