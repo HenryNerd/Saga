@@ -32,6 +32,7 @@ export default function RootLayout({
         <EmailProvider>
           {children}
         </EmailProvider>
+        <SpeedInsights/>
       </body>
     </html>
   );
