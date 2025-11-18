@@ -17,6 +17,10 @@ import { Input } from "@/components/ui/input"
 
 interface StudentCardProps {
     studentID: string;
+    attendance: string;
+    comments: string;
+    onAttendanceChange: (status: string) => void;
+    onCommentsChange: (comments: string) => void;
 }
 
 interface StudentData {
@@ -26,18 +30,23 @@ interface StudentData {
     school: string;
 }
 
-export default function StudentCard({ studentID }: StudentCardProps) {
-    const [attendance, setAttendance] = useState("");
+export default function StudentCard({ 
+    studentID, 
+    attendance, 
+    comments,
+    onAttendanceChange,
+    onCommentsChange
+}: StudentCardProps) {
     const [studentData, setStudentData] = useState<StudentData | null>(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         async function fetchData() {
             try {
-                console.log('Fetching student:', studentID); // Debug log
+                console.log('Fetching student:', studentID);
                 const response = await fetch(`http://localhost:8000/student/${studentID}`);
                 const data = await response.json();
-                console.log('Student data received:', data); // Debug log
+                console.log('Student data received:', data);
                 setStudentData(data);
             } catch (error) {
                 console.error('Error fetching student data:', error);
@@ -48,23 +57,28 @@ export default function StudentCard({ studentID }: StudentCardProps) {
         fetchData();
     }, [studentID]);
 
-    console.log('Rendering StudentCard:', { studentID, studentData, loading }); // Debug log
+    console.log('Rendering StudentCard:', { studentID, studentData, loading });
 
     return (
-        <Card className="m-2">
-            <CardContent className="pt-6 text-lg">
+        <Card className="mt-2 ml-2 mr-2">
+            <CardContent className="pt-0 text-lg">
                 {loading && <p>Loading...</p>}
                 {!loading && !studentData && <p>No student data found</p>}
                 {studentData && (
-                    <h2 className="mb-4 font-semibold">
-                        {studentData.firstName} {studentData.lastName}
-                    </h2>
+                    <>
+                        <h2 className="mb-0 font-semibold">
+                            {studentData.firstName} {studentData.lastName}
+                        </h2>
+                        <h4 className="mt-0 mb-4 font-semibold text-sm font-thin">
+                            {studentID} | Grade: {studentData.grade}
+                        </h4>
+                    </>
                 )}
                 <ToggleGroup
                     type="single"
                     variant="outline"
                     value={attendance}
-                    onValueChange={setAttendance}
+                    onValueChange={onAttendanceChange}
                 >
                     <ToggleGroupItem
                         value="present"
@@ -92,7 +106,12 @@ export default function StudentCard({ studentID }: StudentCardProps) {
                     <FieldSet className="mt-4">
                         <Field>
                             <FieldLabel htmlFor={`tardy-${studentID}`}>Comments</FieldLabel>
-                            <Input id={`tardy-${studentID}`} type="text" />
+                            <Input 
+                                id={`tardy-${studentID}`} 
+                                type="text"
+                                value={comments}
+                                onChange={(e) => onCommentsChange(e.target.value)}
+                            />
                         </Field>
                     </FieldSet>
                 )}
@@ -100,7 +119,12 @@ export default function StudentCard({ studentID }: StudentCardProps) {
                     <FieldSet className="mt-4">
                         <Field>
                             <FieldLabel htmlFor={`absent-${studentID}`}>Comments</FieldLabel>
-                            <Input id={`absent-${studentID}`} type="text" />
+                            <Input 
+                                id={`absent-${studentID}`} 
+                                type="text"
+                                value={comments}
+                                onChange={(e) => onCommentsChange(e.target.value)}
+                            />
                         </Field>
                     </FieldSet>
                 )}
