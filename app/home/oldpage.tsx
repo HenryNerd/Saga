@@ -181,10 +181,30 @@ export default function Home() {
             <div className="grid place-items-center">
                 <Card className="w-full max-w-sm">
                     <CardHeader>
-                        <CardTitle>My Courses</CardTitle>
+                        <CardTitle>Find A Course</CardTitle>
+                        {!isVisible &&
+                            <Alert variant="destructive">
+                                <AlertCircleIcon className="flex-shrink-0" />
+                                <AlertTitle className="">
+                                    You are not the teacher of this course.
+                                </AlertTitle>
+                            </Alert>
+                        }
                     </CardHeader>
                     <CardContent>
-                        
+                        <FieldSet>
+                            <Field>
+                                <FieldLabel className="w-3xs" htmlFor="courseID">Course ID</FieldLabel>
+                                <Input
+                                    id="courseID"
+                                    autoComplete="off"
+                                    placeholder="TED6091"
+                                    value={courseID}
+                                    onChange={(e) => setCourseID(e.target.value)}
+                                    className="mb-6"
+                                />
+                            </Field>
+                        </FieldSet>
                         <Sheet>
                             <SheetTrigger asChild>
                                 <Button className="w-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" onClick={handleOpenClick}>Open</Button>
