@@ -47,17 +47,7 @@ import {
     AlertTitle,
 } from "@/components/ui/alert"
 import { AlertCircleIcon, Car, Router } from "lucide-react"
-import {
-    NavigationMenu,
-    NavigationMenuContent,
-    NavigationMenuIndicator,
-    NavigationMenuItem,
-    NavigationMenuLink,
-    NavigationMenuList,
-    NavigationMenuTrigger,
-    NavigationMenuViewport,
-} from "@/components/ui/navigation-menu"
-import { useRouter } from 'next/navigation';
+import NavBar from "@/components/ui/navbar";
 
 async function fetchData(courseCode: string): Promise<CourseResponse> {
     const response = await fetch(`http://localhost:8000/course/${courseCode}`);
@@ -74,7 +64,6 @@ export default function Home() {
     const [attendanceRecords, setAttendanceRecords] = useState<AttendanceRecord[]>([]);
     const [fname, setFname] = useState("")
     const [lname, setLname] = useState("")
-    const router = useRouter();
     const [isVisible, setIsVisible] = useState(true);
 
     useEffect(() => {
@@ -153,38 +142,37 @@ export default function Home() {
         return null;
     }
 
-    const logout = () => {
-        router.push('/');
-        localStorage.removeItem("fname");
-        localStorage.removeItem("lname");
-    }
-
     return (
         <div className="bg-gray-100 min-h-screen">
-            <div className="flex w-full justify-between items-center">
-                <NavigationMenu>
-                    <NavigationMenuList>
-                        <NavigationMenuItem className="text-4xl m-3 font-semibold bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">
-                            Saga
-                        </NavigationMenuItem>
-                    </NavigationMenuList>
-                </NavigationMenu>
-                <NavigationMenu>
-                    <NavigationMenuList>
-                        <NavigationMenuItem onClick={logout} className="text-2xl m-3 cursor-pointer">
-                            Hello, {fname} {lname}
-                        </NavigationMenuItem>
-                    </NavigationMenuList>
-                </NavigationMenu>
-            </div>
+            <NavBar></NavBar>
             <br></br>
             <div className="grid place-items-center">
                 <Card className="w-full max-w-sm">
                     <CardHeader>
-                        <CardTitle>My Courses</CardTitle>
+                        <CardTitle>Find A Course</CardTitle>
+                        {!isVisible &&
+                            <Alert variant="destructive">
+                                <AlertCircleIcon className="flex-shrink-0" />
+                                <AlertTitle className="">
+                                    You are not the teacher of this course.
+                                </AlertTitle>
+                            </Alert>
+                        }
                     </CardHeader>
                     <CardContent>
-                        
+                        <FieldSet>
+                            <Field>
+                                <FieldLabel className="w-3xs" htmlFor="courseID">Course ID</FieldLabel>
+                                <Input
+                                    id="courseID"
+                                    autoComplete="off"
+                                    placeholder="TED6091"
+                                    value={courseID}
+                                    onChange={(e) => setCourseID(e.target.value)}
+                                    className="mb-6"
+                                />
+                            </Field>
+                        </FieldSet>
                         <Sheet>
                             <SheetTrigger asChild>
                                 <Button className="w-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" onClick={handleOpenClick}>Open</Button>
