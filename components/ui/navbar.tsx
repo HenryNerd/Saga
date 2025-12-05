@@ -46,9 +46,6 @@ export default function NavBar() {
                         Saga
                     </NavigationMenuItem>
                     <NavigationMenuItem className="mx-1 cursor-pointer">
-                        <NavigationMenuLink className="text-3xl" href="/test">New Home</NavigationMenuLink>
-                    </NavigationMenuItem>
-                    <NavigationMenuItem className="cursor-pointer mt-0">
                         <NavigationMenuLink className="text-3xl" href="/home">Home</NavigationMenuLink>
                     </NavigationMenuItem>
                 </NavigationMenuList>

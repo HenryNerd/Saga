@@ -1,142 +1,51 @@
 "use client"
 import { useState, useEffect } from "react";
 import {
-    Sheet,
-    SheetClose,
-    SheetContent,
-    SheetDescription,
-    SheetHeader,
-    SheetTitle,
-    SheetTrigger,
-} from "@/components/ui/sheet"
-import { Button } from "@/components/ui/button"
-import StudentCard from '../../components/ui/studentCard';
-import {
-    Field,
-    FieldLabel,
-    FieldLegend,
-    FieldSet,
-} from "@/components/ui/field"
-import { Input } from "@/components/ui/input"
-import { toast } from "sonner"
-
-interface CourseResponse {
-    roster_list: string[];
-    courseName: string;
-    teacher: string;
-}
-
-interface AttendanceRecord {
-    studentID: string;
-    status: string;
-    comments?: string;
-}
-
-import {
     Card,
-    CardAction,
-    CardContent,
-    CardDescription,
-    CardFooter,
-    CardHeader,
     CardTitle,
 } from "@/components/ui/card"
-import {
-    Alert,
-    AlertDescription,
-    AlertTitle,
-} from "@/components/ui/alert"
-import { AlertCircleIcon, Car, Router } from "lucide-react"
 import NavBar from "@/components/ui/navbar";
-
-async function fetchData(courseCode: string): Promise<CourseResponse> {
-    const response = await fetch(`http://localhost:8000/course/${courseCode}`);
-    if (!response.ok) throw new Error("Failed to fetch course data");
-    return response.json();
-}
+import ClassCard from "@/components/ui/classCard";
 
 export default function Home() {
-    const [courseID, setCourseID] = useState("");
-    const [studentIDs, setStudentIDs] = useState<string[]>([]);
-    const [courseName, setCourseName] = useState("");
-    const [teacher, setTeacher] = useState("");
-    const [isMounted, setIsMounted] = useState(false);
-    const [attendanceRecords, setAttendanceRecords] = useState<AttendanceRecord[]>([]);
     const [fname, setFname] = useState("")
-    const [lname, setLname] = useState("")
-    const [isVisible, setIsVisible] = useState(true);
+    const [isMounted, setIsMounted] = useState(false);
+    const [courses, setCourses] = useState<string[]>([]);
 
     useEffect(() => {
         setIsMounted(true);
         try {
             const storedFname = localStorage.getItem("fname");
-            const storedLname = localStorage.getItem("lname");
             if (storedFname) setFname(storedFname);
-            if (storedLname) setLname(storedLname);
-            console.log("Loaded from localStorage:", storedFname, storedLname);
+            getCourses();
         } catch (error) {
             console.error("Error reading from localStorage:", error);
-            setFname("");
-            setLname("");
         }
     }, []);
 
-    const handleOpenClick = async () => {
-        console.log("Course ID:", courseID);
-        const data = await fetchData(courseID);
-        console.log("Full course data:", data);
-        const roster = Array.isArray(data.roster_list)
-            ? data.roster_list
-            : [];
-        console.log("Processed roster:", roster);
-        setStudentIDs(roster);
-        setCourseName(data.courseName);
-        setTeacher(data.teacher);
-        setAttendanceRecords(roster.map(id => ({
-            studentID: id,
-            status: "",
-            comments: ""
-        })));
-        if (data.teacher === `${lname}, ${fname}`) {
-            setIsVisible(true);
-        } else {
-            setIsVisible(false);
+    async function getCourses() {
+        try {
+            const userID = localStorage.getItem("userID");
+            if (!userID) {
+                console.error("No userID found in localStorage");
+                return null;
+            }
+            
+            const response = await fetch(`http://localhost:8000/courses/${userID}`);
+            
+            if (!response.ok) {
+                throw new Error('Failed to fetch courses');
+            }
+            
+            const data = await response.json();
+            console.log(data);
+            setCourses(data);
+            return data;
+        } catch (error) {
+            console.error("Error fetching courses:", error);
+            return null;
         }
-    };
-
-    const updateAttendance = (index: number, status: string, comments?: string) => {
-        setAttendanceRecords(prev => {
-            const updated = [...prev];
-            updated[index] = {
-                ...updated[index],
-                status,
-                comments: comments || updated[index].comments
-            };
-            return updated;
-        });
-    };
-
-    const handleRecordAttendance = async () => {
-    console.log("Recording attendance:", attendanceRecords);
-
-    const response = await fetch(`http://localhost:8000/attendance/${courseID}`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify(attendanceRecords),
-    });
-
-    console.log("Recorded Attendance");
-
-    if (!response.ok) {
-        toast.error("Failed to record attendance");
-        return;
     }
-
-    toast.success("Attendance recorded!");
-};
-
 
     if (!isMounted) {
         return null;
@@ -146,67 +55,34 @@ export default function Home() {
         <div className="bg-gray-100 min-h-screen">
             <NavBar></NavBar>
             <br></br>
-            <div className="grid place-items-center">
-                <Card className="w-full max-w-sm">
-                    <CardHeader>
-                        <CardTitle>Find A Course</CardTitle>
-                        {!isVisible &&
-                            <Alert variant="destructive">
-                                <AlertCircleIcon className="flex-shrink-0" />
-                                <AlertTitle className="">
-                                    You are not the teacher of this course.
-                                </AlertTitle>
-                            </Alert>
-                        }
-                    </CardHeader>
-                    <CardContent>
-                        <FieldSet>
-                            <Field>
-                                <FieldLabel className="w-3xs" htmlFor="courseID">Course ID</FieldLabel>
-                                <Input
-                                    id="courseID"
-                                    autoComplete="off"
-                                    placeholder="TED6091"
-                                    value={courseID}
-                                    onChange={(e) => setCourseID(e.target.value)}
-                                    className="mb-6"
-                                />
-                            </Field>
-                        </FieldSet>
-                        <Sheet>
-                            <SheetTrigger asChild>
-                                <Button className="w-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" onClick={handleOpenClick}>Open</Button>
-                            </SheetTrigger>
-                            {isVisible &&
-                                <SheetContent className="overflow-y-auto">
-                                    <SheetHeader>
-                                        <SheetTitle>{courseName || "Attendance"}</SheetTitle>
-                                        <SheetDescription>
-                                            Teacher: {teacher || "Unknown"} <br />
-                                            Total Students: {studentIDs.length}
-                                        </SheetDescription>
-                                    </SheetHeader>
-                                    <div className="mt-4 space-y-4">
-                                        {studentIDs.map((id, index) => (
-                                            <StudentCard
-                                                key={index}
-                                                studentID={id}
-                                                attendance={attendanceRecords[index]?.status || ""}
-                                                comments={attendanceRecords[index]?.comments || ""}
-                                                onAttendanceChange={(status) => updateAttendance(index, status)}
-                                                onCommentsChange={(comments) => updateAttendance(index, attendanceRecords[index]?.status, comments)}
-                                            />
-                                        ))}
-                                        <SheetClose>
-                                            <Button className="w-full m-4 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" onClick={handleRecordAttendance}>
-                                                Record Attendance
-                                            </Button>
-                                        </SheetClose>
-                                    </div>
-                                </SheetContent>
-                            }
-                        </Sheet>
-                    </CardContent>
+            <div className="flex w-full justify-center items-center">
+                <Card className="w-235 h-auto mt-6 mb-6 p-12">
+                    <CardTitle className="text-3xl mb-6">Hello, {fname}</CardTitle>
+                    <div className="flex flex-col gap-12">
+                        <div className="flex gap-6 items-center">
+                            <h1 className="text-3xl">1</h1>
+                            <ClassCard courseCode={courses[0]}></ClassCard>
+                            <ClassCard courseCode={courses[4]}></ClassCard>
+                        </div>
+
+                        <div className="flex gap-6 items-center">
+                            <h1 className="text-3xl">2</h1>
+                            <ClassCard courseCode={courses[1]}></ClassCard>
+                            <ClassCard courseCode={courses[5]}></ClassCard>
+                        </div>
+
+                        <div className="flex gap-6 items-center">
+                            <h1 className="text-3xl">3</h1>
+                            <ClassCard courseCode={courses[2]}></ClassCard>
+                            <ClassCard courseCode={courses[6]}></ClassCard>
+                        </div>
+
+                        <div className="flex gap-6 items-center">
+                            <h1 className="text-3xl">4</h1>
+                            <ClassCard courseCode={courses[3]}></ClassCard>
+                            <ClassCard courseCode={courses[7]}></ClassCard>
+                        </div>
+                    </div>
                 </Card>
             </div>
         </div>
